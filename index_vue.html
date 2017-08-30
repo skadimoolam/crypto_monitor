@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Crypto Currency Monitor</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://unpkg.com/vue"></script>
+  <style>
+    th { text-align: center; }
+  </style>
+</head>
+<body>
+
+  <div class="container container-fluid" id="vueApp">
+    <br>
+
+    <div class="col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
+      <table class="table table-stripped table-bordered">
+        <thead><tr><th>Coin</th><th>USD</th><th>INR</th></tr></thead>
+        <tbody>
+          <tr v-for="coin in coins" align="center">
+            <td><a :href="setUrl(coin.link)" target="_blank">{{ coin.token }}</a></td>
+            <td>$ {{ convData(priceUsd[coin.token]) || 0 }}</td>
+            <td>₹ {{ convData(priceInr[coin.token]) || 0 }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+<script type="text/javascript">
+
+var app = new Vue({
+  el: "#vueApp",
+  data: {
+    coins: [
+      {token: "BTC", link: "bitcoin"},
+      {token: "BCN", link: "bytecoin-bcn"},
+      {token: "XMR", link: "monero"},
+      {token: "ETH", link: "ethereum"},
+      {token: "ETC", link: "ethereum-classic"},
+      {token: "DASH", link: "dash"},
+      {token: "ZEC", link: "zcash"},
+      {token: "LTC", link: "litecoin"}
+    ],
+    priceUsd: {},
+    priceInr: {}
+  },
+  methods: {
+    getData: function () {
+      var api_url = "https://min-api.cryptocompare.com/data/price?tsyms=BTC,BCN,XMR,ETH,ETC,DASH,ZEC,LTC&fsym=";
+
+      fetch(api_url + "INR").then((res) => res.json()).then((data) => this.priceInr = data);
+      fetch(api_url + "USD").then((res) => res.json()).then((data) => this.priceUsd = data);
+    },
+    convData: function (price) {
+      return (1 / price).toFixed(3);
+    },
+    setUrl: function(link) {
+      return "https://coinmarketcap.com/currencies/" + link;
+    }
+  },
+  created: function() {
+    this.getData();
+  }
+});
+</script>
+</body>
+</html>
